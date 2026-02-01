@@ -1,0 +1,7 @@
+[[
+    "/demo", "/"
+], [
+    "/dist", "/libs/sparklify"
+], [
+    "/node_modules/github-corner-element/dist", "/libs/github-corner-element"
+]]

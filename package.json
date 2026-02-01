@@ -1,0 +1,51 @@
+{
+  "name": "@h0rn0chse/sparklify",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/sparklify.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/sparklify.js"
+    },
+    "./css": "./dist/sparklify.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && node build.js && tsc --emitDeclarationOnly --outDir dist",
+    "watch": "npm run clean && concurrently \"node build.js --watch\" \"tsc --emitDeclarationOnly --outDir dist --watch\"",
+    "serve": "tsx server.ts",
+    "dev": "concurrently \"npm:serve\" \"npm:watch\""
+  },
+  "author": {
+    "name": "h0rn0chse",
+    "email": "h0rn0chse@gmx.de"
+  },
+  "homepage": "https://github.com/H0rn0chse/Sparklify#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/H0rn0chse/Sparklify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/H0rn0chse/Sparklify/issues"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@h0rn0chse/socket-server": "^1.1.1",
+    "@types/node": "^25.0.5",
+    "concurrently": "^9.2.1",
+    "esbuild": "^0.24.0",
+    "github-corner-element": "^1.0.1",
+    "rimraf": "^6.1.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "sparkle"
+  ]
+}
