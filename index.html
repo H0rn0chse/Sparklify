@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sparklify</title>
+    <link id="favicon" rel="icon" type="image/x-icon" href="./sparkle.svg" />
+    <!-- anonymized statistics-->
+    <script
+      defer
+      src="https://h0rn0chse-umami.up.railway.app/WQ4fyxmP2iMY.js"
+      data-website-id="4dbd412b-e45c-4440-b831-befe9261d887"
+    ></script>
+
+    <!-- dev files -->
+    <script
+      type="module"
+      src="./libs/github-corner-element/github-corner-element.es.js"
+    ></script>
+    <script
+      type="module"
+      src="./libs/sparklify/sparklify-webcomponent.js"
+    ></script>
+    <link rel="stylesheet" href="./libs/sparklify/sparklify.css" />
+
+    <!-- demo files -->
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./index.js"></script>
+  </head>
+  <body>
+    <div id="content">
+      <h1>Sparklify</h1>
+      <p>
+        some Text with
+        <sparklify-content
+          count="3"
+          colors="yellow,white,gold,orange"
+          size="2rem"
+          speed="1000"
+        >
+          <b>sparkle</b>
+        </sparklify-content>
+        via web component
+      </p>
+      <p>
+        some other Text with
+        <span id="target" class="sparklify-target">
+          <b>sparkle</b>
+        </span>
+        via JS library
+      </p>
+    </div>
+  </body>
+  <github-corner
+    title="Check out the GitHub repository!"
+    href="https://github.com/H0rn0chse/Sparklify"
+  >
+  </github-corner>
+</html>
