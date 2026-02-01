@@ -1,5 +1,3 @@
-# build and deploy to gh-pages
-
 name: update-pages
 
 on:
