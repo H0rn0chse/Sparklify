@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  buildAndUpdateDist:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
         run: |
           git config --local user.name  ${{ github.event.pusher.name }}
           git config --local user.email  ${{ github.event.pusher.email }}
-          git add ./dist
+          git add ./dist -f
           git commit -m "[CI] Updating dist files"
       - name: Push changes
         uses: ad-m/github-push-action@master
