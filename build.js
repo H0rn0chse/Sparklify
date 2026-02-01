@@ -1,88 +1,144 @@
 import * as esbuild from "esbuild";
-import { copyFileSync, mkdirSync, watch } from "fs";
-import { dirname } from "path";
+import { copyFileSync, mkdirSync, watch, rmSync } from "fs";
+import { execSync } from "child_process";
 
-const outdir = "dist";
+// ===== Configuration =====
+const PATHS = {
+  outDir: "dist",
+  tempDts: ".temp-dts",
+  src: {
+    entry: "src/index.ts",
+    css: "src/sparkle.css",
+  },
+  dist: {
+    js: "dist/sparklify.js",
+    jsMin: "dist/sparklify.min.js",
+    css: "dist/sparklify.css",
+    cssMin: "dist/sparklify.min.css",
+    dts: "dist/sparklify.d.ts",
+  },
+};
+
+const ESBUILD_CONFIG = {
+  format: "esm",
+  platform: "browser",
+  target: "es2022",
+  sourcemap: true,
+};
+
+// ===== Setup =====
 const isWatch = process.argv.includes("--watch");
+mkdirSync(PATHS.outDir, { recursive: true });
 
-// Ensure dist directory exists
-mkdirSync(outdir, { recursive: true });
-
-if (isWatch) {
-  // Watch mode
-  const ctx = await esbuild.context({
-    entryPoints: ["src/index.ts"],
-    bundle: true,
-    outfile: `${outdir}/sparklify.js`,
-    format: "esm",
-    platform: "browser",
-    target: "es2022",
-    sourcemap: true,
-    minify: false,
+// ===== Build Functions =====
+function generateDeclarations() {
+  execSync(`tsc --emitDeclarationOnly --outDir ${PATHS.tempDts}`, {
+    stdio: "inherit",
   });
+  execSync(
+    `dts-bundle-generator -o ${PATHS.dist.dts} ${PATHS.tempDts}/index.d.ts`,
+    { stdio: "inherit" },
+  );
+  rmSync(PATHS.tempDts, { recursive: true, force: true });
+}
 
-  const ctxMin = await esbuild.context({
-    entryPoints: ["src/index.ts"],
+function copyCSS() {
+  copyFileSync(PATHS.src.css, PATHS.dist.css);
+}
+
+async function buildJS() {
+  await Promise.all([
+    // Main bundle
+    esbuild.build({
+      entryPoints: [PATHS.src.entry],
+      bundle: true,
+      outfile: PATHS.dist.js,
+      ...ESBUILD_CONFIG,
+      minify: false,
+    }),
+    // Minified bundle
+    esbuild.build({
+      entryPoints: [PATHS.src.entry],
+      bundle: true,
+      outfile: PATHS.dist.jsMin,
+      ...ESBUILD_CONFIG,
+      minify: true,
+    }),
+  ]);
+}
+
+async function buildCSS() {
+  copyCSS();
+  await esbuild.build({
+    entryPoints: [PATHS.src.css],
     bundle: true,
-    outfile: `${outdir}/sparklify.min.js`,
-    format: "esm",
-    platform: "browser",
-    target: "es2022",
-    sourcemap: true,
+    outfile: PATHS.dist.cssMin,
     minify: true,
   });
+}
 
-  const ctxCSS = await esbuild.context({
-    entryPoints: ["src/sparkle.css"],
-    bundle: true,
-    outfile: `${outdir}/sparklify.min.css`,
-    minify: true,
-  });
+// ===== Watch Mode =====
+async function runWatchMode() {
+  // Create esbuild contexts
+  const [jsCtx, jsMinCtx, cssCtx] = await Promise.all([
+    esbuild.context({
+      entryPoints: [PATHS.src.entry],
+      bundle: true,
+      outfile: PATHS.dist.js,
+      ...ESBUILD_CONFIG,
+      minify: false,
+    }),
+    esbuild.context({
+      entryPoints: [PATHS.src.entry],
+      bundle: true,
+      outfile: PATHS.dist.jsMin,
+      ...ESBUILD_CONFIG,
+      minify: true,
+    }),
+    esbuild.context({
+      entryPoints: [PATHS.src.css],
+      bundle: true,
+      outfile: PATHS.dist.cssMin,
+      minify: true,
+    }),
+  ]);
 
-  await Promise.all([ctx.watch(), ctxMin.watch(), ctxCSS.watch()]);
+  // Start watching
+  await Promise.all([jsCtx.watch(), jsMinCtx.watch(), cssCtx.watch()]);
 
-  // Watch for CSS changes to copy unminified version
-  watch("src/sparkle.css", () => {
-    copyFileSync("src/sparkle.css", `${outdir}/sparklify.css`);
+  // Watch CSS for unminified copy
+  watch(PATHS.src.css, () => {
+    copyCSS();
     console.log("✓ CSS copied");
   });
 
-  // Initial CSS copy
-  copyFileSync("src/sparkle.css", `${outdir}/sparklify.css`);
+  // Watch TypeScript files for declarations
+  watch("src", { recursive: true }, (eventType, filename) => {
+    if (filename?.endsWith(".ts")) {
+      console.log("Regenerating declarations...");
+      generateDeclarations();
+      console.log("✓ Declarations updated");
+    }
+  });
+
+  // Initial build
+  copyCSS();
+  generateDeclarations();
 
   console.log("👀 Watching for changes...");
-} else {
-  // Build mode
-  await esbuild.build({
-    entryPoints: ["src/index.ts"],
-    bundle: true,
-    outfile: `${outdir}/sparklify.js`,
-    format: "esm",
-    platform: "browser",
-    target: "es2022",
-    sourcemap: true,
-    minify: false,
-  });
+}
 
-  await esbuild.build({
-    entryPoints: ["src/index.ts"],
-    bundle: true,
-    outfile: `${outdir}/sparklify.min.js`,
-    format: "esm",
-    platform: "browser",
-    target: "es2022",
-    sourcemap: true,
-    minify: true,
-  });
-
-  copyFileSync("src/sparkle.css", `${outdir}/sparklify.css`);
-
-  await esbuild.build({
-    entryPoints: ["src/sparkle.css"],
-    bundle: true,
-    outfile: `${outdir}/sparklify.min.css`,
-    minify: true,
-  });
-
+// ===== Build Mode =====
+async function runBuildMode() {
+  await buildJS();
+  await buildCSS();
+  generateDeclarations();
   console.log("✓ Build complete!");
+}
+
+// ===== Main =====
+if (isWatch) {
+  await runWatchMode();
+} else {
+  await runBuildMode();
 }
