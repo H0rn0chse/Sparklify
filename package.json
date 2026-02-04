@@ -48,6 +48,8 @@
     "typescript": "^5.9.3"
   },
   "keywords": [
-    "sparkle"
+    "sparkle",
+    "fancy",
+    "webcomponent"
   ]
 }
