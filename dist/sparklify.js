@@ -34,6 +34,11 @@ var Sparkle = class {
   }
 };
 
+// src/utils.ts
+function randomMinMax(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
 // src/SparkleAnimation.ts
 var SparkleAnimation = class {
   target;
@@ -46,10 +51,12 @@ var SparkleAnimation = class {
   animationLengthMin;
   animationLengthMax;
   isRunning = false;
+  isPaused = false;
   animationController = new AbortController();
+  resolveAfterStop = void 0;
   constructor(options) {
     this.target = options.target;
-    this.size = options.size ?? "20px";
+    this.size = options.size ?? "1.2rem";
     this.colors = options.colors ?? ["yellow", "white", "gold", "orange"];
     this.animationLength = options.animationLength ?? 700;
     this.initialDelay = options.initialDelay ?? 0;
@@ -58,8 +65,16 @@ var SparkleAnimation = class {
     this.animationLengthMin = this.animationLength;
     this.animationLengthMax = this.animationLength * 1.6;
   }
-  wait(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  wait(ms, signal) {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(resolve, ms);
+      if (signal) {
+        signal.addEventListener("abort", () => {
+          clearTimeout(timeout);
+          reject(new DOMException("Aborted", "AbortError"));
+        });
+      }
+    });
   }
   async runSparkle(animationLength) {
     const color = this.colors[Math.floor(Math.random() * this.colors.length)];
@@ -77,17 +92,38 @@ var SparkleAnimation = class {
       sparkle.destroy();
     });
     this.target.insertAdjacentElement("afterbegin", domRef);
-    await this.wait(animationLength);
+    try {
+      await this.wait(animationLength, this.animationController.signal);
+    } catch {
+    }
     sparkle.destroy();
   }
   async animate() {
-    await this.wait(this.initialDelay);
+    this.isPaused = true;
+    try {
+      await this.wait(this.initialDelay, this.animationController.signal);
+    } catch {
+      return;
+    }
+    this.isPaused = false;
     while (this.isRunning) {
-      const randomAnimationLength = Math.random() * (this.animationLengthMax - this.animationLengthMin) + this.animationLengthMin;
+      const randomAnimationLength = randomMinMax(this.animationLengthMin, this.animationLengthMax);
       await this.runSparkle(randomAnimationLength);
-      if (!this.isRunning) break;
-      const pauseDuration = Math.random() * (this.pauseMax - this.pauseMin) + this.pauseMin;
-      await this.wait(pauseDuration);
+      if (this.resolveAfterStop) {
+        this.resolveAfterStop(null);
+      }
+      if (!this.isRunning) {
+        break;
+      }
+      ;
+      this.isPaused = true;
+      const pauseDuration = randomMinMax(this.pauseMin, this.pauseMax);
+      try {
+        await this.wait(pauseDuration, this.animationController.signal);
+      } catch {
+        break;
+      }
+      this.isPaused = false;
     }
   }
   start() {
@@ -104,9 +140,19 @@ var SparkleAnimation = class {
     this.animationController.abort();
     this.animationController = new AbortController();
   }
+  async stopOnceDone() {
+    if (!this.isRunning || this.isPaused) {
+      this.stop();
+      return;
+    }
+    const stopOnceDoneDeferred = Promise.withResolvers();
+    this.resolveAfterStop = stopOnceDoneDeferred.resolve;
+    await stopOnceDoneDeferred.promise;
+    this.resolveAfterStop = void 0;
+    this.stop();
+  }
 };
 export {
-  Sparkle,
   SparkleAnimation
 };
 //# sourceMappingURL=sparklify.js.map

@@ -10,6 +10,7 @@
       "types": "./dist/sparklify.d.ts",
       "default": "./dist/sparklify.js"
     },
+    "./webcomponent": "./dist/sparklify-webcomponent.js",
     "./css": "./dist/sparklify.css"
   },
   "files": [
