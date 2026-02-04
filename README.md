@@ -24,7 +24,7 @@ import "@h0rn0chse/sparklify/webcomponent";
 or use the CDN of your choice
 
 ```html
-<script src="https://unpkg.com/@h0rn0chse/spraklify/dist/sparklify-webcomponent.min.js"></script>
+<script src="https://unpkg.com/@h0rn0chse/sparklify/dist/sparklify-webcomponent.min.js"></script>
 ```
 
 And create a sparkle animation
@@ -52,10 +52,10 @@ import "@h0rn0chse/sparklify/css";
 or use the CDN of your choice
 
 ```html
-<script src="https://unpkg.com/@h0rn0chse/spraklify/dist/sparklify.min.js"></script>
+<script src="https://unpkg.com/@h0rn0chse/sparklify/dist/sparklify.min.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@h0rn0chse/spraklify/dist/sparklify.css"
+  href="https://unpkg.com/@h0rn0chse/sparklify/dist/sparklify.css"
 />
 ```
 
