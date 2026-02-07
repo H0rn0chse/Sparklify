@@ -13,6 +13,12 @@ npm install @h0rn0chse/sparklify
 
 ## Usage
 
+### General
+
+Sparklify creates animated sparkle elements that appear at random positions within a target element. Each sparkle smoothly fades in and out over a configurable duration, with random pauses between animations for a natural sparkly effect.
+
+Sparkles toggle their `z-index` between `-1` and `2` in both the web component and the library. If you want sparkles to appear only in front of or only behind your content, set an explicit `z-index` on the target content (or its children) so the stacking order is deterministic.
+
 ### Usage via Web Component
 
 Import the module
@@ -85,7 +91,7 @@ animation.stop();
 
 ### `sparklify-content`
 
-Custom element that renders sparkles around its slotted content. The element wraps the slot in a positioned container, so you don't need to set `position: relative` on the slotted element.
+Custom element that renders sparkles around its slotted content. The element wraps the slot in a positioned container, so you don't need to set `position: relative` on the slotted element. Additionally the web component has `display: inline-block` by default.
 
 #### Attributes
 
