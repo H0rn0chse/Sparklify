@@ -61,7 +61,7 @@ or use the CDN of your choice
 <script src="https://unpkg.com/@h0rn0chse/sparklify/dist/sparklify.min.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@h0rn0chse/sparklify/dist/sparklify.css"
+  href="https://unpkg.com/@h0rn0chse/sparklify/dist/sparklify.min.css"
 />
 ```
 
