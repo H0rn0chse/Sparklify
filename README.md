@@ -5,7 +5,7 @@ Inspired by the react guide of Josh Comeau: https://www.joshwcomeau.com/react/an
 
 ## Installation
 
-The library is available via npm
+The library is available via [npm](https://www.npmjs.com/package/@h0rn0chse/sparklify)
 
 ```bash
 npm install @h0rn0chse/sparklify
