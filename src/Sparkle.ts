@@ -15,11 +15,11 @@ export class Sparkle {
   }
 
   #createHtml(): void {
-    this.#root.classList.add("sparkleWrapper");
+    this.#root.classList.add("sparklify-sparkleWrapper");
     this.#root.style.width = this.size;
 
     const outerSparkle = document.createElement("div");
-    outerSparkle.classList.add("outerSparkle");
+    outerSparkle.classList.add("sparklify-outerSparkle");
     outerSparkle.style.width = this.size;
 
     const innerSparkle = document.createElementNS(
@@ -28,7 +28,7 @@ export class Sparkle {
     );
     innerSparkle.setAttribute("viewBox", "0 0 68 68");
     innerSparkle.innerHTML = `<path d="${path}" fill="${this.color}"/>`;
-    innerSparkle.classList.add("innerSparkle");
+    innerSparkle.classList.add("sparklify-innerSparkle");
     innerSparkle.style.width = this.size;
 
     outerSparkle.appendChild(innerSparkle);

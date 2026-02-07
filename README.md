@@ -100,7 +100,13 @@ All attributes are reactive and can be changed at runtime.
 
 ### `SparkleAnimation`
 
-The `SparkleAnimation` creates sparkles at random positions within the provided target `HTMLElement`. This target needs to be **positioned relative**. After each animation cycle the animation pauses for a random amount of time to be more sparkly.
+The `SparkleAnimation` creates sparkles at random positions within the provided target `HTMLElement`. This target needs to be **positioned relative** and **displayed as inline-block**. After each animation cycle the animation pauses for a random amount of time to be more sparkly.
+
+You can apply the built-in `sparklify-target` CSS class to satisfy these requirements:
+
+```html
+<span id="target" class="sparklify-target">Sparkle me</span>
+```
 
 #### Constructor Options
 

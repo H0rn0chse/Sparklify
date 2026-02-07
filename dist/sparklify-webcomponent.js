@@ -26,10 +26,10 @@ var Sparkle = class {
     this.#createHtml();
   }
   #createHtml() {
-    this.#root.classList.add("sparkleWrapper");
+    this.#root.classList.add("sparklify-sparkleWrapper");
     this.#root.style.width = this.size;
     const outerSparkle = document.createElement("div");
-    outerSparkle.classList.add("outerSparkle");
+    outerSparkle.classList.add("sparklify-outerSparkle");
     outerSparkle.style.width = this.size;
     const innerSparkle = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -37,7 +37,7 @@ var Sparkle = class {
     );
     innerSparkle.setAttribute("viewBox", "0 0 68 68");
     innerSparkle.innerHTML = `<path d="${path}" fill="${this.color}"/>`;
-    innerSparkle.classList.add("innerSparkle");
+    innerSparkle.classList.add("sparklify-innerSparkle");
     innerSparkle.style.width = this.size;
     outerSparkle.appendChild(innerSparkle);
     this.#root.appendChild(outerSparkle);
@@ -243,8 +243,13 @@ var AnimationHandler = class {
 };
 
 // src/webcomponent/index.ts
-var styleTemplate = document.createElement("template");
-styleTemplate.innerHTML = `<style>@keyframes sparkle-rotate {
+var libraryStylesTemplate = document.createElement("template");
+libraryStylesTemplate.innerHTML = `<style>.sparklify-target {
+  position: relative;
+  display: inline-block;
+}
+
+@keyframes sparklify-rotate-sparkle {
   from {
     transform: rotate(0deg);
   }
@@ -253,7 +258,7 @@ styleTemplate.innerHTML = `<style>@keyframes sparkle-rotate {
   }
 }
 
-@keyframes sparkle-size {
+@keyframes sparklify-scale-sparkle {
   0% {
     transform: scale(0);
   }
@@ -265,12 +270,12 @@ styleTemplate.innerHTML = `<style>@keyframes sparkle-rotate {
   }
 }
 
-.sparkleWrapper,
-.sparkleWrapper * {
+.sparklify-sparkleWrapper,
+.sparklify-sparkleWrapper * {
   pointer-events: none;
 }
 
-.sparkleWrapper {
+.sparklify-sparkleWrapper {
   position: absolute;
   display: flex;
   align-items: center;
@@ -281,15 +286,16 @@ styleTemplate.innerHTML = `<style>@keyframes sparkle-rotate {
   transform: translate(-50%, -50%);
 }
 
-.outerSparkle {
+.sparklify-outerSparkle {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: sparkle-size var(--animation-length) ease-in-out forwards;
+  animation: sparklify-scale-sparkle var(--animation-length) ease-in-out
+    forwards;
 }
 
-.innerSparkle {
-  animation: sparkle-rotate var(--animation-length) linear forwards;
+.sparklify-innerSparkle {
+  animation: sparklify-rotate-sparkle var(--animation-length) linear forwards;
 }
 </style>`;
 var Sparklify = class extends HTMLElement {
@@ -299,8 +305,15 @@ var Sparklify = class extends HTMLElement {
   }
   connectedCallback() {
     const shadowRoot = this.attachShadow({ mode: "open" });
-    const styleElement = styleTemplate.content.cloneNode(true);
-    shadowRoot.appendChild(styleElement);
+    const libraryStyles = libraryStylesTemplate.content.cloneNode(true);
+    shadowRoot.appendChild(libraryStyles);
+    const wcStyles = document.createElement("style");
+    shadowRoot.appendChild(wcStyles);
+    wcStyles.sheet?.insertRule(`
+      :host {
+        display: inline-block;
+      }
+    `);
     const slot = document.createElement("slot");
     slot.addEventListener("slotchange", () => {
       this.handler.updateAnimations();

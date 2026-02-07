@@ -1,4 +1,9 @@
-@keyframes sparkle-rotate {
+.sparklify-target {
+  position: relative;
+  display: inline-block;
+}
+
+@keyframes sparklify-rotate-sparkle {
   from {
     transform: rotate(0deg);
   }
@@ -7,7 +12,7 @@
   }
 }
 
-@keyframes sparkle-size {
+@keyframes sparklify-scale-sparkle {
   0% {
     transform: scale(0);
   }
@@ -19,12 +24,12 @@
   }
 }
 
-.sparkleWrapper,
-.sparkleWrapper * {
+.sparklify-sparkleWrapper,
+.sparklify-sparkleWrapper * {
   pointer-events: none;
 }
 
-.sparkleWrapper {
+.sparklify-sparkleWrapper {
   position: absolute;
   display: flex;
   align-items: center;
@@ -35,13 +40,14 @@
   transform: translate(-50%, -50%);
 }
 
-.outerSparkle {
+.sparklify-outerSparkle {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: sparkle-size var(--animation-length) ease-in-out forwards;
+  animation: sparklify-scale-sparkle var(--animation-length) ease-in-out
+    forwards;
 }
 
-.innerSparkle {
-  animation: sparkle-rotate var(--animation-length) linear forwards;
+.sparklify-innerSparkle {
+  animation: sparklify-rotate-sparkle var(--animation-length) linear forwards;
 }

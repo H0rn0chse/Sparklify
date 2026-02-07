@@ -65,27 +65,12 @@ function injectCSSIntoWebComponent() {
     try {
       let content = readFileSync(filePath, "utf-8");
 
-      // Check if it's in a template literal or regular string
-      if (content.includes("`STYLE_CONTENT_PLACEHOLDER`")) {
-        // For template literals, escape backticks, backslashes, and template expressions
-        const escapedCSS = cssContent
-          .replace(/\\/g, "\\\\")
-          .replace(/`/g, "\\`")
-          .replace(/\${/g, "\\${");
-        content = content.replace(
-          "`STYLE_CONTENT_PLACEHOLDER`",
-          "`<style>${escapedCSS}</style>`",
-        );
-      } else {
-        // For regular strings, escape quotes and backslashes
-        const escapedCSS = cssContent
-          .replace(/\\/g, "\\\\")
-          .replace(/"/g, '\\"');
-        content = content.replace(
-          '"<style>STYLE_CONTENT_PLACEHOLDER</style>"',
-          `\`<style>${escapedCSS}</style>\``,
-        );
-      }
+      // For regular strings, escape quotes and backslashes
+      const escapedCSS = cssContent.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      content = content.replace(
+        '"<style>STYLE_CONTENT_PLACEHOLDER</style>"',
+        `\`<style>${escapedCSS}</style>\``,
+      );
 
       writeFileSync(filePath, content, "utf-8");
     } catch (error) {

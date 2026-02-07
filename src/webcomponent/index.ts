@@ -1,8 +1,8 @@
 import { parseCssSize } from "../utils";
 import { AnimationHandler } from "./AnimationHandler";
 
-const styleTemplate = document.createElement("template");
-styleTemplate.innerHTML = "<style>STYLE_CONTENT_PLACEHOLDER</style>";
+const libraryStylesTemplate = document.createElement("template");
+libraryStylesTemplate.innerHTML = "<style>STYLE_CONTENT_PLACEHOLDER</style>";
 
 class Sparklify extends HTMLElement {
   private handler: AnimationHandler = new AnimationHandler();
@@ -15,8 +15,16 @@ class Sparklify extends HTMLElement {
     // Create a shadow root
     const shadowRoot = this.attachShadow({ mode: "open" });
     
-    const styleElement = styleTemplate.content.cloneNode(true);
-    shadowRoot.appendChild(styleElement);
+    const libraryStyles = libraryStylesTemplate.content.cloneNode(true);
+    shadowRoot.appendChild(libraryStyles);
+
+    const wcStyles = document.createElement("style");
+    shadowRoot.appendChild(wcStyles);
+    wcStyles.sheet?.insertRule(`
+      :host {
+        display: inline-block;
+      }
+    `);
 
     const slot = document.createElement("slot");
     slot.addEventListener("slotchange", () => {
